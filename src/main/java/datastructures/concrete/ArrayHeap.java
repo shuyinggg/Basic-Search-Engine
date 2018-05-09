@@ -52,6 +52,7 @@ public class ArrayHeap<T extends Comparable<T>> implements IPriorityQueue<T> {
         } else {
             item = this.heap[0];
             this.heap[0] = this.heap[currentSize - 1];
+            this.heap[currentSize - 1] = null;
             this.currentSize--;
             //find its four children, compare and swap (recursion)
             //Base case: smaller than all children
@@ -131,7 +132,7 @@ public class ArrayHeap<T extends Comparable<T>> implements IPriorityQueue<T> {
         for (int k = 1; k <= 4; k++) {
             child = 4 * i + k; 
             if (this.heap[child] != null) {
-                if (min.compareTo(this.heap[child]) > 1) {
+                if (min.compareTo(this.heap[child]) > 0) {
                     min = this.heap[child];
                     minIndex = child;
                 }
@@ -140,6 +141,10 @@ public class ArrayHeap<T extends Comparable<T>> implements IPriorityQueue<T> {
             }
         }
         return minIndex;
+    }
+    
+    public T[] getHeap() {
+        return this.heap;
     }
     
 }

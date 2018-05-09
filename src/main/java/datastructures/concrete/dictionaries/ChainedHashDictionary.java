@@ -16,13 +16,13 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
     // it using our private tests.
     private IDictionary<K, V>[] chains;
     private int cap;
-    private int num;
+    private int currentSize;
     
     // You're encouraged to add extra fields (and helper methods) though!
 
     public ChainedHashDictionary() {
-        num = 0; // initial size
-        cap = 9973; // pick a prime for capacity of initial array 
+        currentSize = 0; // initial size
+        this.cap = 50101; // pick a prime for capacity of initial array 
         chains = makeArrayOfChains(cap);
     }
 
@@ -40,7 +40,7 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
         return (IDictionary<K, V>[]) new IDictionary[size];
     }
     
-    public int getHash(K key) {
+    public int getCode(K key) {
         if (key == null) {
             return 0;
         } else {
@@ -50,7 +50,7 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
 
     @Override
     public V get(K key) {
-        int hash = this.getHash(key);
+        int hash = this.getCode(key);
         if (chains[hash] == null) {
             throw new NoSuchKeyException();
         }
@@ -60,43 +60,44 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
 
     @Override
     public void put(K key, V value) {
-        int hash = this.getHash(key);
-        if (chains[hash] == null) {
-            chains[hash] = new ArrayDictionary<K, V>();
-        }        
-        if (!chains[hash].containsKey(key)) {
-            this.num++;
+        if (chains[this.getCode(key)] == null) {
+            chains[this.getCode(key)] = new ArrayDictionary<K, V>();
         }
-        chains[hash].put(key, value);
-        // resize();
+        if (chains[this.getCode(key)].containsKey(key)) {
+            chains[this.getCode(key)].put(key, value);
+        } else {
+            chains[this.getCode(key)].put(key, value);
+            this.currentSize++;
+        }
+        if (currentSize / cap >= 10) {
+            this.resize();
+        }
     }
     
-    // resize the array only if lambda > 1
-    public void resize() {
-        if (this.num > this.cap) {       
+    //resize the array only if lambda >= 10
+    public void resize() {      
             this.cap = this.cap * 2;
             IDictionary<K, V>[] newChains = makeArrayOfChains(cap);
             for (KVPair<K, V> pair : this) {
                 K key = pair.getKey();
                 V value = pair.getValue();
-                int newindex = this.getHash(key);
+                int newindex = this.getCode(key);
                 if (newChains[newindex] == null) {
                     newChains[newindex] = new ArrayDictionary<K, V>();
                 }
                 newChains[newindex].put(key, value);
             }
-            chains = newChains;          
-        }
+            this.chains = newChains;          
     }
 
     @Override
     public V remove(K key) {
-        int hash = this.getHash(key);
+        int hash = this.getCode(key);
         if (chains[hash] == null) {
             throw new NoSuchKeyException();
         } else {
             if (chains[hash].containsKey(key)) {
-                this.num--;
+                this.currentSize--;
             }
             return chains[hash].remove(key);
         }
@@ -104,7 +105,7 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
 
     @Override
     public boolean containsKey(K key) {
-        int hash = this.getHash(key);
+        int hash = this.getCode(key);
         if (chains[hash] == null) {
             return false;
         } else {
@@ -114,7 +115,7 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
 
     @Override
     public int size() {
-        return this.num;
+        return this.currentSize;
     }
 
     @Override

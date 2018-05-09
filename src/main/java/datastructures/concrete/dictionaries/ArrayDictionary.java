@@ -19,7 +19,7 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
 
     public ArrayDictionary() {
         this.size = 0;
-        this.cap = 10000; // initial capacity
+        this.cap = 1000; // initial capacity
         pairs = makeArrayOfPairs(cap);
     }
 
@@ -92,24 +92,45 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
          } 
     }
 
+//    @Override
+//    public V remove(K key) {
+//        if (!containsKey(key)) {
+//            throw new NoSuchKeyException();
+//        }
+//        V value = null;
+//        int i = 0;
+//        for (i = 0; i < this.size; i++) {
+//            if (key == null && this.pairs[i].key == null) {
+//                value = this.pairs[i].value;
+//                break;
+//            } else if (this.pairs[i].key.equals(key)) {
+//                value = this.pairs[i].value;
+//                break;
+//            }
+//        }
+//        this.pairs[i] = this.pairs[size - 1];
+//        this.size--;
+//        return value;
+//    }
     @Override
     public V remove(K key) {
-        if (!containsKey(key)) {
-            throw new NoSuchKeyException();
-        }
         V value = null;
         int i = 0;
         for (i = 0; i < this.size; i++) {
-            if (key == null && this.pairs[i].key == null) {
-                value = this.pairs[i].value;
-                break;
-            } else if (this.pairs[i].key.equals(key)) {
-                value = this.pairs[i].value;
-                break;
-            }
-        }
-        this.pairs[i] = this.pairs[size - 1];
-        this.size--;
+            Pair<K, V> pair = this.pairs[i];
+            if (pair.key == null && key == null) {
+                this.pairs[i] = this.pairs[size - 1];
+                this.size--;
+                return pair.value;
+            } else if (pair.key != null && pair.key.equals(key)) {
+                this.pairs[i] = this.pairs[size - 1];
+                this.size--;
+                return pair.value;
+            } 
+        } 
+        if (i == this.size) {
+            throw new NoSuchKeyException();    
+        } 
         return value;
     }
 
