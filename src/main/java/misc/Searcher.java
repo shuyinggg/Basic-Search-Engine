@@ -1,6 +1,9 @@
 package misc;
 
+import datastructures.concrete.ArrayHeap;
+import datastructures.concrete.DoubleLinkedList;
 import datastructures.interfaces.IList;
+import datastructures.interfaces.IPriorityQueue;
 import misc.exceptions.NotYetImplementedException;
 
 public class Searcher {
@@ -30,11 +33,24 @@ public class Searcher {
         //
         // - You should implement this method by using your ArrayHeap for the sake of
         //   efficiency.
-
-        if (k < 0) {
+        IList<T> output = new DoubleLinkedList<T>();
+        IPriorityQueue<T> heap = new ArrayHeap<T>();
+        if (k < 0 || input.size() == 0) {
             throw new IllegalArgumentException();
+        } else if (k == 0) {
+            return output;
         } else {
-            return input;
+            for (int i = 0; i < input.size(); i++) {
+                heap.insert(input.get(i));
+                if (heap.size() > k) {
+                    heap.removeMin();
+                }
+            }
+            int size = heap.size();
+            for (int i = 0; i < size; i++) {
+                output.add(heap.removeMin());
+            }
+            return output; 
         }
     }
 }

@@ -143,8 +143,5 @@ public class ArrayHeap<T extends Comparable<T>> implements IPriorityQueue<T> {
         return minIndex;
     }
     
-    public T[] getHeap() {
-        return this.heap;
-    }
     
 }

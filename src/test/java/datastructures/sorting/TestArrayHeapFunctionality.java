@@ -82,6 +82,16 @@ public class TestArrayHeapFunctionality extends BaseTest {
     }
     
     @Test(timeout=SECOND)
+    public void testInsertThrowsException() {
+        IPriorityQueue<Integer> heap = this.makeInstance();
+        try {
+            heap.insert(null);
+        } catch (IllegalArgumentException ex){
+            //do nothing
+        }
+    }
+    
+    @Test(timeout=SECOND)
     public void testInsertandRemoveMin() {
         IPriorityQueue<Integer> heap = this.makeInstance();
         heap.insert(3);
@@ -93,19 +103,16 @@ public class TestArrayHeapFunctionality extends BaseTest {
         heap.insert(7);
         heap.insert(9);
         heap.insert(3);
-        //manually 
         assertEquals(0,heap.removeMin());
-        assertEquals(3,heap.removeMin());
-        assertEquals(3,heap.removeMin());
-        assertEquals(8,heap.removeMin());
         assertEquals(2,heap.removeMin());
+        assertEquals(3,heap.removeMin());
+        assertEquals(3,heap.removeMin());
+        assertEquals(5,heap.removeMin());
         assertEquals(6,heap.removeMin());
         assertEquals(7,heap.removeMin());
+        assertEquals(8,heap.removeMin());
         assertEquals(9,heap.removeMin());
-        assertEquals(5,heap.removeMin());
-        assertEquals(0,heap.size());
-        
-        
+        assertEquals(0,heap.size());    
     }
     
     
