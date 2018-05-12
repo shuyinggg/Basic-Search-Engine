@@ -40,11 +40,25 @@ public class TestTopKSortFunctionality extends BaseTest {
         list.add(12);
         
         IList<Integer> top = Searcher.topKSort(3, list);
-        System.out.println(top.get(0));
         assertEquals(3, top.size());
         assertEquals(42,top.get(0));
         assertEquals(56,top.get(1));
         assertEquals(91,top.get(2));
     }
+    
+    @Test(timeout=SECOND)
+    public void testIllegalInputException() {
+        IList<Integer> list = new DoubleLinkedList<>();
+        try {
+            IList<Integer> top = Searcher.topKSort(-3, list);
+        } catch (IllegalArgumentException ex) {
+            //
+        }
+        
+
+
+    }
+    
+    
     
 }

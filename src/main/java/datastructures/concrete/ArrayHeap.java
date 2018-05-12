@@ -84,6 +84,9 @@ public class ArrayHeap<T extends Comparable<T>> implements IPriorityQueue<T> {
             //(fourth children: i/4 - 1; i/4 otherwise)
             this.percolateUp(currentSize - 1);
         }
+        if (this.currentSize >= this.cap) {
+            this.resize();
+        }
     }
 
     @Override
@@ -94,10 +97,10 @@ public class ArrayHeap<T extends Comparable<T>> implements IPriorityQueue<T> {
     private void percolateUp(int i) {
         //find its parent
         int parent;
-        if (i % 4 == 0) {
-            parent = i/4 - 1;
+        if (i % NUM_CHILDREN == 0) {
+            parent = i/NUM_CHILDREN - 1;
         } else {
-            parent = i/4;
+            parent = i/NUM_CHILDREN;
         }
         if (parent < 0) {
             return;
@@ -129,9 +132,11 @@ public class ArrayHeap<T extends Comparable<T>> implements IPriorityQueue<T> {
         int child;
         T min = this.heap[i];
         int minIndex = i;
-        for (int k = 1; k <= 4; k++) {
-            child = 4 * i + k; 
-            if (this.heap[child] != null) {
+        for (int k = 1; k <= NUM_CHILDREN; k++) {
+            child = NUM_CHILDREN * i + k; 
+            if (child > this.currentSize - 1) {
+                break;
+            } else if (this.heap[child] != null) {
                 if (min.compareTo(this.heap[child]) > 0) {
                     min = this.heap[child];
                     minIndex = child;
@@ -143,5 +148,16 @@ public class ArrayHeap<T extends Comparable<T>> implements IPriorityQueue<T> {
         return minIndex;
     }
     
+    private void resize() {
+        this.cap = this.cap * 2;
+        T[] newHeap;
+        newHeap= makeArrayOfT(cap);
+        int i = 0;
+        for (T item : heap) {
+            newHeap[i] = item;
+            i++;
+        }
+        this.heap = newHeap;
+    }
     
 }

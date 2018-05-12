@@ -35,13 +35,13 @@ public class Searcher {
         //   efficiency.
         IList<T> output = new DoubleLinkedList<T>();
         IPriorityQueue<T> heap = new ArrayHeap<T>();
-        if (k < 0 || input.size() == 0) {
+        if (k < 0 || input == null) {
             throw new IllegalArgumentException();
         } else if (k == 0) {
             return output;
         } else {
-            for (int i = 0; i < input.size(); i++) {
-                heap.insert(input.get(i));
+            for (T item : input) {
+                heap.insert(item);
                 if (heap.size() > k) {
                     heap.removeMin();
                 }

@@ -22,7 +22,7 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
 
     public ChainedHashDictionary() {
         currentSize = 0; // initial size
-        this.cap = 50101; // pick a prime for capacity of initial array 
+        this.cap = 10; // pick a prime for capacity of initial array 
         chains = makeArrayOfChains(cap);
     }
 
@@ -69,12 +69,12 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
             chains[this.getCode(key)].put(key, value);
             this.currentSize++;
         }
-        if (currentSize / cap >= 10) {
+        if (currentSize / cap >= 1) {
             this.resize();
         }
     }
     
-    //resize the array only if lambda >= 10
+    //resize the array only if lambda >= 1
     public void resize() {      
             this.cap = this.cap * 2;
             IDictionary<K, V>[] newChains = makeArrayOfChains(cap);

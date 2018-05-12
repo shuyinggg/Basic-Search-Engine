@@ -19,7 +19,7 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
 
     public ArrayDictionary() {
         this.size = 0;
-        this.cap = 1000; // initial capacity
+        this.cap = 10; // initial capacity
         pairs = makeArrayOfPairs(cap);
     }
 
