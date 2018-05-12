@@ -103,16 +103,16 @@ public class TestArrayHeapFunctionality extends BaseTest {
         heap.insert(7);
         heap.insert(9);
         heap.insert(3);
-        assertEquals(0,heap.removeMin());
-        assertEquals(2,heap.removeMin());
-        assertEquals(3,heap.removeMin());
-        assertEquals(3,heap.removeMin());
-        assertEquals(5,heap.removeMin());
-        assertEquals(6,heap.removeMin());
-        assertEquals(7,heap.removeMin());
-        assertEquals(8,heap.removeMin());
-        assertEquals(9,heap.removeMin());
-        assertEquals(0,heap.size());    
+        assertEquals(0, heap.removeMin());
+        assertEquals(2, heap.removeMin());
+        assertEquals(3, heap.removeMin());
+        assertEquals(3, heap.removeMin());
+        assertEquals(5, heap.removeMin());
+        assertEquals(6, heap.removeMin());
+        assertEquals(7, heap.removeMin());
+        assertEquals(8, heap.removeMin());
+        assertEquals(9, heap.removeMin());
+        assertEquals(0, heap.size());    
     }
     
     

@@ -10,17 +10,11 @@ import datastructures.concrete.DoubleLinkedList;
 import datastructures.interfaces.IList;
 import datastructures.interfaces.IPriorityQueue;
 
-import static org.junit.Assert.assertTrue;
 
 /**
  * See spec for details on what kinds of tests this class should include.
  */
-public class TestSortingStress extends BaseTest {
-    //@Test(timeout=10*SECOND)
-    //public void testPlaceholder() {
-        //assertTrue(true);
-    //}
-    
+public class TestSortingStress extends BaseTest { 
     @Test(timeout=5*SECOND)
     public void testTopKSortLargeInput() {
         IList<Integer> list = new DoubleLinkedList<>();

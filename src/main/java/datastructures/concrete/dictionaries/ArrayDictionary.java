@@ -74,7 +74,7 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
               }
               this.pairs = temp;
           }
-          //put
+        //put
         for (i = 0; i < this.size; i++) {
             Pair<K, V> pair = this.pairs[i];
             if (pair.key == null && key == null) {
@@ -92,26 +92,6 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
          } 
     }
 
-//    @Override
-//    public V remove(K key) {
-//        if (!containsKey(key)) {
-//            throw new NoSuchKeyException();
-//        }
-//        V value = null;
-//        int i = 0;
-//        for (i = 0; i < this.size; i++) {
-//            if (key == null && this.pairs[i].key == null) {
-//                value = this.pairs[i].value;
-//                break;
-//            } else if (this.pairs[i].key.equals(key)) {
-//                value = this.pairs[i].value;
-//                break;
-//            }
-//        }
-//        this.pairs[i] = this.pairs[size - 1];
-//        this.size--;
-//        return value;
-//    }
     @Override
     public V remove(K key) {
         V value = null;
