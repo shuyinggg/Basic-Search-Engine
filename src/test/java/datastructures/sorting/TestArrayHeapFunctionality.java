@@ -1,6 +1,7 @@
 package datastructures.sorting;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import misc.BaseTest;
 import misc.exceptions.EmptyContainerException;
@@ -29,6 +30,7 @@ public class TestArrayHeapFunctionality extends BaseTest {
         IPriorityQueue<Integer> heap = this.makeInstance();
         try {
             heap.removeMin();
+            fail("Expected EmptyContainerException");
         } catch (EmptyContainerException ex){
             //do nothing
         }
@@ -39,6 +41,7 @@ public class TestArrayHeapFunctionality extends BaseTest {
         IPriorityQueue<Integer> heap = this.makeInstance();
         try {
             heap.peekMin();
+            fail("Expected EmptyContainerException");
         } catch (EmptyContainerException ex){
             //do nothing
         }
@@ -48,15 +51,12 @@ public class TestArrayHeapFunctionality extends BaseTest {
     public void testRemoveMinBasic() {
         IPriorityQueue<Integer> heap = this.makeInstance();
         heap.insert(3);
-        try {
-            heap.removeMin();
-        } catch (EmptyContainerException ex){
-            //do nothing
-        }
+        heap.removeMin();
         assertEquals(0, heap.size());
         assertTrue(heap.isEmpty());
         try {
             heap.removeMin();
+            fail("Expected EmptyContainerException");
         } catch (EmptyContainerException ex){
             //do nothing
         }  
@@ -66,16 +66,12 @@ public class TestArrayHeapFunctionality extends BaseTest {
     public void testPeekMinBasic() {
         IPriorityQueue<Integer> heap = this.makeInstance();
         heap.insert(3);
-        try {
-            heap.peekMin();
-        } catch (EmptyContainerException ex){
-            //do nothing
-        }
         assertEquals(1, heap.size());
         assertTrue(!heap.isEmpty());
         heap.removeMin();
         try {
             heap.peekMin();
+            fail("Expected EmptyContainerException");
         } catch (EmptyContainerException ex){
             //do nothing
         }  
@@ -86,6 +82,7 @@ public class TestArrayHeapFunctionality extends BaseTest {
         IPriorityQueue<Integer> heap = this.makeInstance();
         try {
             heap.insert(null);
+            fail("Expected IllegalArgumentException");
         } catch (IllegalArgumentException ex){
             //do nothing
         }
@@ -115,5 +112,15 @@ public class TestArrayHeapFunctionality extends BaseTest {
         assertEquals(0, heap.size());    
     }
     
+    @Test(timeout=SECOND)
+    public void testResize() {
+        IPriorityQueue<Integer> heap = this.makeInstance();
+        for (int i = 0; i < 100000; i++) {
+            heap.insert(i);
+        }
+       
+    }
+    
+    //TO DO: TEST RESIZE
     
 }

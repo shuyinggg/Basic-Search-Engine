@@ -5,6 +5,8 @@ import datastructures.concrete.DoubleLinkedList;
 import datastructures.interfaces.IList;
 import misc.Searcher;
 
+import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -56,10 +58,40 @@ public class TestTopKSortFunctionality extends BaseTest {
         IList<Integer> list = new DoubleLinkedList<>();
         try {
             IList<Integer> top = Searcher.topKSort(-3, list);
+            fail("Expected IllegalArgumentException");
         } catch (IllegalArgumentException ex) {
             //Do nothing
         }
     }
+    
+    @Test(timeout=SECOND)
+    public void testKLargerThanSize() {
+        IList<Integer> ilist = new DoubleLinkedList<>();
+        List<Integer> list = new ArrayList<>();
+        ilist.add(1);
+        list.add(1);
+        ilist.add(3);
+        list.add(3);
+        ilist.add(2);
+        list.add(2);
+        IList<Integer> top = Searcher.topKSort(5, ilist);
+        Collections.sort(list);
+        assertEquals(3, top.size());
+        for (int i = 0; i < 3; i++) {
+            assertEquals(list.get(i), top.get(i));
+        }  
+    }
+    
+    @Test(timeout=SECOND)
+    public void testKIsZero() {
+        IList<Integer> ilist = new DoubleLinkedList<>();
+        ilist.add(1);
+        ilist.add(3);
+        ilist.add(2);
+        IList<Integer> top = Searcher.topKSort(0, ilist);
+        assertEquals(0, top.size());      
+    }
+    
     
     @Test(timeout=SECOND)
     public void testSortBasics() {
@@ -76,7 +108,6 @@ public class TestTopKSortFunctionality extends BaseTest {
             assertEquals(list.get(44 + i), output.get(i));
         }
     }
-    
     
     
 }

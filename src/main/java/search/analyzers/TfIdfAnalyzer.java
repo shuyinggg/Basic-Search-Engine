@@ -98,8 +98,8 @@ public class TfIdfAnalyzer {
      */
     private IDictionary<String, Double> computeTfScores(IList<String> words) {
         //throw new NotYetImplementedException();
-        IDictionary<String, Double> wordCount = new ArrayDictionary<>();
-        IDictionary<String, Double> tfScores = new ArrayDictionary<>();
+        IDictionary<String, Double> wordCount = new ChainedHashDictionary<>();
+        IDictionary<String, Double> tfScores = new ChainedHashDictionary<>();
         for (String word : words) {
             if (wordCount.containsKey(word))
             {
@@ -123,12 +123,12 @@ public class TfIdfAnalyzer {
         // Hint: this method should use the idfScores field and
         // call the computeTfScores(...) method.
         //throw new NotYetImplementedException();
-        IDictionary<URI, IDictionary<String, Double>> allVectors = new ArrayDictionary<>();
-        IDictionary<URI, Double> pageNorm = new ArrayDictionary<>();
+        IDictionary<URI, IDictionary<String, Double>> allVectors = new ChainedHashDictionary<>();
+        IDictionary<URI, Double> pageNorm = new ChainedHashDictionary<>();
         for (Webpage page : pages) {
             double norm = 0;
             URI url = page.getUri();
-            IDictionary<String, Double> vectors = new ArrayDictionary<>();
+            IDictionary<String, Double> vectors = new ChainedHashDictionary<>();
             IList<String> words = page.getWords();
             for (KVPair<String, Double> pair : this.computeTfScores(words)) {
                 String word = pair.getKey();
@@ -161,7 +161,7 @@ public class TfIdfAnalyzer {
         double dNorm = this.documentNorm.get(pageUri);
         
 
-        IDictionary<String, Double> queryVector = new ArrayDictionary<>();
+        IDictionary<String, Double> queryVector = new ChainedHashDictionary<>();
         IDictionary<String, Double> queryTFScores = this.computeTfScores(query);
         double queryNorm = 0.0;
         for (KVPair<String, Double> pair : queryTFScores) {
