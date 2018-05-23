@@ -6,6 +6,7 @@ import datastructures.concrete.dictionaries.ChainedHashDictionary;
 import datastructures.interfaces.IDictionary;
 import datastructures.interfaces.IList;
 import datastructures.interfaces.ISet;
+//import misc.exceptions.NotYetImplementedException;
 import search.models.Webpage;
 
 import java.net.URI;
@@ -61,20 +62,27 @@ public class PageRankAnalyzer {
      */
     private IDictionary<URI, ISet<URI>> makeGraph(ISet<Webpage> webpages) {
         //throw new NotYetImplementedException();
-        IDictionary<URI, ISet<URI>> internet = new ChainedHashDictionary<>();
+        IDictionary<URI, ISet<URI>> result = new ChainedHashDictionary<>();
+        
+        // get all the valid URIs to the space for later use
+        ISet<URI> space = new ChainedHashSet<>(); 
+        for (Webpage page : webpages) {
+            space.add(page.getUri());
+        }
+        
         for (Webpage page : webpages) {
             IList<URI> links = page.getLinks();
-            URI url = page.getUri();
-            ISet<URI> edges = new ChainedHashSet<>();
-            for (URI link : links) {
-                if (this.getAllUris(webpages).contains(link) && 
-                        !link.equals(url) && !edges.contains(link) ) {
-                    edges.add(link);  
-                    }
-                        internet.put(url, edges);   
+            URI selflink = page.getUri();
+            ISet<URI> pointsTo = new ChainedHashSet<>();
+            
+            for (URI link : links) { 
+                if (space.contains(link) && !link.equals(selflink) && !pointsTo.contains(link)) {
+                  pointsTo.add(link);
+                }
             }
-        }
-        return internet;
+            result.put(selflink, pointsTo);
+        } 
+        return result;
     }
 
     /**
@@ -94,66 +102,78 @@ public class PageRankAnalyzer {
                                                    int limit,
                                                    double epsilon) {
         // Step 1: The initialize step should go here
-        IDictionary<URI, Double> toUpdateRanks = new ChainedHashDictionary<>();
-        IDictionary<URI, Double> finalPageRanks = new ChainedHashDictionary<>();
-        IDictionary<URI, Double> oldPageRanks = new ChainedHashDictionary<>();
-        for (KVPair<URI, ISet<URI>> pair : graph) {
-            URI url = pair.getKey();
-            finalPageRanks.put(url, 1.0 / graph.size());
+        IDictionary<URI, Double> result = new ChainedHashDictionary<>();
+        
+        // equal weight rank
+        int totalPages = graph.size();
+        IDictionary<URI, Double> rank = new ChainedHashDictionary<>();
+        for (KVPair<URI, ISet<URI>> page : graph) {
+            rank.put(page.getKey(), 1.0 / totalPages);   
         }
-        //Traverse graph each loop and update the values
-        // # of web pages which have no outgoing links
-
-        IDictionary<URI, ISet<URI>> incomingLinks = new ChainedHashDictionary<>();
-        for (KVPair<URI, ISet<URI>> url1 : graph) {
-            ISet<URI> linksTo = new ChainedHashSet<>();
-            for (KVPair<URI, ISet<URI>> url2 : graph) {
-                ISet<URI> links = url2.getValue();
-                if (links != null && links.contains(url1.getKey())) {
-                    linksTo.add(url2.getKey());
+        
+        // get all the valid URIs to the space for later use
+        ISet<URI> space = new ChainedHashSet<>();
+        for (KVPair<URI, ISet<URI>> pair : graph) { 
+            space.add(pair.getKey());
+        }
+        
+        for (int i = 0; i < limit; i++) {
+            // Step 2: The update step should go here
+            
+            // 2.1
+            if (i != 0) {
+                for (KVPair<URI, ISet<URI>> page : graph) {
+                    rank.put(page.getKey(), result.get(page.getKey()));
                 }
             }
-         incomingLinks.put(url1.getKey(), linksTo);
-        }
-        // Step 2: The update step should go here
-        for (int i = 0; i < 1; i++) {
-            for (KVPair<URI, Double> url : finalPageRanks) {
-                oldPageRanks.put(url.getKey(), url.getValue());
+            
+            for (KVPair<URI, ISet<URI>> page : graph) {
+                result.put(page.getKey(), 0.0);
             }
-            Double add = 0.0;
-            for (KVPair<URI, ISet<URI>> url : graph) {
-                double value = (1 - decay) / graph.size();
-                System.out.println(incomingLinks.get(url.getKey()).size() + "Incoming");
-                for (URI link : incomingLinks.get(url.getKey())) {
-                    int uniqueLinks = graph.get(link).size();
-                    System.out.println(uniqueLinks + "Links");
-                    if (uniqueLinks != 0) {
-                        value = value + finalPageRanks.get(link) * decay / uniqueLinks;
+            
+            // 2.2
+            for (KVPair<URI, ISet<URI>> page : graph) {
+                URI selflink = page.getKey();
+                ISet<URI> links = page.getValue();
+                int numLinks = links.size();
+                
+                if (numLinks == 0) {
+                    // increase rank for every other pages
+                    for (URI uri : space) {
+                        result.put(uri, result.get(uri) + (decay * rank.get(selflink) / totalPages));
                     }
-                 }
-                 toUpdateRanks.put(url.getKey(), value);
-                 if (graph.get(url.getKey()) == null) {
-                      add = add + decay * finalPageRanks.get(url.getKey()) / graph.size();
-                 }
-                    
+                } else {
+                    for (URI link : links) {
+                        result.put(link, result.get(link) + (decay * rank.get(selflink) / numLinks));
+                    }
+                }
             }
-             for (KVPair<URI, Double> url : toUpdateRanks) {
-               finalPageRanks.put(url.getKey(), url.getValue() + add);
-             }
-             // Step 3: the convergence step should go here.
-             // Return early if we've converged.
-             int check = 0;
-             for (KVPair<URI, Double> url : finalPageRanks) {
-                 if (Math.abs(url.getValue() - oldPageRanks.get(url.getKey())) <= epsilon) {
-                     check++;
-                 }    
-             }
-             if (check == finalPageRanks.size()) {
-                 break;
-             }
-             
-         }
-      return finalPageRanks;  
+            
+            // 2.3
+            for (KVPair<URI, ISet<URI>> page : graph) {
+                URI uri = page.getKey();
+                result.put(uri, result.get(uri) + ((1 - decay) / totalPages));
+            }
+            
+            // Step 3: the convergence step should go here.
+            // Return early if we've converged.
+            
+            //throw new NotYetImplementedException();
+            Boolean converged = true;
+            for (KVPair<URI, ISet<URI>> page : graph) {
+                URI urii = page.getKey();
+                
+                // set to false if there is one case that >= epsilon
+                if (Math.abs(result.get(urii) - rank.get(urii)) >= epsilon) {
+                    converged = false;
+                }
+            }
+            if (converged) {
+                return result;
+            }
+        }
+        //throw new NotYetImplementedException();
+        return result;
     }
 
     /**
@@ -163,15 +183,7 @@ public class PageRankAnalyzer {
      *               webpages given to the constructor.
      */
     public double computePageRank(URI pageUri) {
+        // Implementation note: this method should be very simple: just one line!
         return this.pageRanks.get(pageUri);
     }
-    
-    private ISet<URI> getAllUris(ISet<Webpage> webpages) {
-        ISet<URI> allUrls = new ChainedHashSet<>();
-        for (Webpage page : webpages) {
-            allUrls.add(page.getUri());
-        }
-        return allUrls;
-    }
-        
 }
